@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Three.js Cube Bouncing in 3D Space</title>
+    <meta charset="UTF-8" />
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+      // scene 설정
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(
+        75,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        1000
+      );
+      camera.position.z = 20;
+
+
+      // renderer 설정
+      const renderer = new THREE.WebGLRenderer();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
+
+      // 육면체 생성
+      const geometry = new THREE.BoxGeometry(1, 1, 1);
+    //   const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    // 각 면에 적용될 다른 색상을 설정하는 MeshFaceMaterial
+    var material = new THREE.MeshFaceMaterial([
+        new THREE.MeshBasicMaterial({color: 0xff0000}),
+        new THREE.MeshBasicMaterial({color: 0x00ff00}),
+        new THREE.MeshBasicMaterial({color: 0x0000ff}),
+        new THREE.MeshBasicMaterial({color: 0xffff00}),
+        new THREE.MeshBasicMaterial({color: 0xff00ff}),
+        new THREE.MeshBasicMaterial({color: 0x00ffff})
+      ]);
+      const cube = new THREE.Mesh(geometry, material);
+      scene.add(cube);
+
+
+      // 위치 및 속도 설정
+      cube.position.x = -10 + Math.random() * 20;
+      cube.position.y = -10 + Math.random() * 20;
+      cube.position.z = -10 + Math.random() * 20;
+      const speed = 0.1 + Math.random() * 0.2;
+      const direction = new THREE.Vector3(
+        -1 + Math.random() * 2,
+        -1 + Math.random() * 2,
+        -1 + Math.random() * 2
+      ).normalize();
+
+      // 벽 충돌 검사
+      function checkBoundaries(position, direction) {
+        if (position.x < -7 || position.x > 7) {
+          direction.x = -direction.x;
+        }
+        if (position.y < -7 || position.y > 7) {
+          direction.y = -direction.y;
+        }
+        if (position.z < -7 || position.z > 7) {
+          direction.z = -direction.z;
+        }
+      }
+
+      // 애니메이션 루프 설정
+      function animate() {
+        requestAnimationFrame(animate);
+
+        // 육면체 이동
+        cube.position.add(direction.clone().multiplyScalar(speed));
+
+        // 벽 충돌 검사 및 처리
+        checkBoundaries(cube.position, direction);
+
+        // 렌더링
+        renderer.setClearColor(0x87ceeb); // 하늘색 배경
+
+        renderer.render(scene, camera);
+      }
+      animate();
+    </script>
+  </body>
+</html>
